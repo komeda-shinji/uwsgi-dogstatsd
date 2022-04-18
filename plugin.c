@@ -172,9 +172,7 @@ static int dogstatsd_send_metric(struct uwsgi_buffer *ub, struct uwsgi_stats_pus
 
   if (sendto(sn->fd, ub->buf, ub->pos, 0, (struct sockaddr *) &sn->addr.sa_in, sn->addr_len) < 0) {
     if (errno != EAGAIN) {
-      int e = errno;
       uwsgi_error("dogstatsd_send_metric()/sendto()");
-      uwsgi_error(strerror(e));
     }
   }
 
