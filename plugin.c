@@ -1,4 +1,5 @@
 #include <uwsgi.h>
+#include <string.h>
 
 #define MAX_BUFFER_SIZE 8192
 
@@ -170,7 +171,11 @@ static int dogstatsd_send_metric(struct uwsgi_buffer *ub, struct uwsgi_stats_pus
   }
 
   if (sendto(sn->fd, ub->buf, ub->pos, 0, (struct sockaddr *) &sn->addr.sa_in, sn->addr_len) < 0) {
-    uwsgi_error("dogstatsd_send_metric()/sendto()");
+    if (errno != EAGAIN) {
+      int e = errno;
+      uwsgi_error("dogstatsd_send_metric()/sendto()");
+      uwsgi_error(strerror(e));
+    }
   }
 
   return 0;
